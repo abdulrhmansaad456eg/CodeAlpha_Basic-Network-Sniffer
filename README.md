@@ -1,5 +1,5 @@
 # Network Sniffer
-
+Packet capture performance may vary depending on network traffic volume and Windows permissions.
 A modern, interactive network packet capture tool built for cybersecurity education and professional training. This desktop application provides real-time packet analysis with a sleek, intuitive interface.
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
