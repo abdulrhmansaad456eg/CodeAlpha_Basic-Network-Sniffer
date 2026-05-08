@@ -72,19 +72,11 @@ class MainWindow(ctk.CTk):
         
         logo = ctk.CTkLabel(
             logo_frame,
-            text="◈ Network",
+            text="Network Sniffer",
             font=("Segoe UI", 20, "bold"),
             text_color=Theme.ACCENT_PRIMARY
         )
         logo.pack(anchor="w")
-        
-        subtitle = ctk.CTkLabel(
-            logo_frame,
-            text="Network Sniffer",
-            font=Style.get_font("small"),
-            text_color=Theme.TEXT_MUTED
-        )
-        subtitle.pack(anchor="w")
         
         sep = ctk.CTkFrame(sidebar, height=2, fg_color=Theme.BORDER_COLOR)
         sep.pack(fill="x", padx=20, pady=10)
