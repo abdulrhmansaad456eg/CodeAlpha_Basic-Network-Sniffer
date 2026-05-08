@@ -444,37 +444,23 @@ class MainWindow(ctk.CTk):
             PacketDetailsDialog(self, details)
             
     def _show_export_dialog(self):
-        """Show export dialog."""
+        """Export packets directly as JSON without dialogs."""
         if not self.packet_store:
             ErrorDialog(self, "No Data", "No packets to export.\nStart a capture first.")
             return
-        self._export_dialog = ExportDialog(self, self._do_export)
-        
-    def _do_export(self, format_type: str, file_path: str):
-        """Perform export to file with user-selected path."""
-        import os
-        print(f"DEBUG _do_export: format={format_type}, file_path={file_path}")
-        print(f"DEBUG _do_export: packet count = {len(self.packet_store)}")
 
-        success = False
+        # Direct export to logs folder
+        filename = PacketExporter.generate_filename("json")
+        filepath = PacketExporter.get_export_path(filename)
+
         try:
-            if format_type == "json":
-                print("DEBUG _do_export: calling export_to_json")
-                success = PacketExporter.export_to_json(self.packet_store, file_path)
-            elif format_type == "txt":
-                print("DEBUG _do_export: calling export_to_txt")
-                success = PacketExporter.export_to_txt(self.packet_store, file_path)
-            print(f"DEBUG _do_export: success={success}")
+            success = PacketExporter.export_to_json(self.packet_store, filepath)
+            if success:
+                self.status_indicator.set_status("idle", f"Exported to {filename}")
+            else:
+                ErrorDialog(self, "Export Failed", "Could not export data to file.")
         except Exception as e:
-            print(f"DEBUG _do_export: Exception: {e}")
-            import traceback
-            traceback.print_exc()
-
-        if success:
-            filename = os.path.basename(file_path)
-            self.status_indicator.set_status("idle", f"Exported to {filename}")
-        else:
-            ErrorDialog(self, "Export Failed", "Could not export data to file.")
+            ErrorDialog(self, "Export Error", f"Export failed:\n{str(e)}")
             
     def _clear_packets(self, silent: bool = False):
         """Clear all captured packets."""
