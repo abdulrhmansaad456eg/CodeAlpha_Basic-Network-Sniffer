@@ -173,12 +173,12 @@ class Style:
         
     @staticmethod
     def _lighten_color(hex_color: str, percent: int) -> str:
-        """Lighten a hex color by percentage."""
+        """Lighten or darken a hex color by percentage."""
         hex_color = hex_color.lstrip('#')
         rgb = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-        
+
         new_rgb = tuple(
-            min(255, int(c + (255 - c) * percent / 100))
+            max(0, min(255, int(c + (255 - c) * percent / 100)))
             for c in rgb
         )
         return f'#{new_rgb[0]:02x}{new_rgb[1]:02x}{new_rgb[2]:02x}'

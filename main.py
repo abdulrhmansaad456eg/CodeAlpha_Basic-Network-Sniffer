@@ -1,5 +1,5 @@
 """
-CodeAlpha Basic Network Sniffer
+Network Sniffer
 A modern packet capture tool for cybersecurity education.
 
 Entry point for the application.
@@ -40,8 +40,8 @@ def check_admin_privileges():
 def main():
     """Main entry point."""
     print("=" * 60)
-    print("CodeAlpha Network Sniffer")
-    print("Cybersecurity Internship Project")
+    print("Network Sniffer")
+    print("Packet Capture & Analysis Tool")
     print("=" * 60)
     
     check_windows_environment()

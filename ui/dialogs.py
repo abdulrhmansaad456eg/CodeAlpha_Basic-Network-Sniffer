@@ -116,96 +116,199 @@ class PacketDetailsDialog(ctk.CTkToplevel):
 
 
 class ExportDialog(ctk.CTkToplevel):
-    """Export options dialog."""
-    
-    def __init__(self, parent, on_export: callable):
+    """Export options dialog with improved workflow."""
+
+    def __init__(self, parent, on_export_complete: callable):
         super().__init__(parent)
-        
-        self.title("Export Packets")
-        self.geometry("400x250")
+
+        self.title("Export Data")
+        self.geometry("380x280")
         self.configure(fg_color=Theme.BG_PRIMARY)
-        self.on_export = on_export
-        
+        self.on_export_complete = on_export_complete
+        self.selected_format = None
+
         self.transient(parent)
         self.grab_set()
-        
-        self.format_var = ctk.StringVar(value="json")
-        
+
         self._build_ui()
         self._center_on_parent(parent)
-        
+
     def _build_ui(self):
-        """Build dialog UI."""
+        """Build dialog UI with format selection and confirm workflow."""
         main_frame = ctk.CTkFrame(self, fg_color="transparent")
-        main_frame.pack(fill="both", expand=True, padx=30, pady=30)
-        
+        main_frame.pack(fill="both", expand=True, padx=25, pady=25)
+
         header = ctk.CTkLabel(
             main_frame,
-            text="Export Packet Data",
+            text="Export Capture Data",
             font=Style.get_font("subtitle"),
             text_color=Theme.TEXT_PRIMARY
         )
-        header.pack(anchor="w", pady=(0, 20))
-        
-        format_label = ctk.CTkLabel(
+        header.pack(anchor="w", pady=(0, 5))
+
+        subheader = ctk.CTkLabel(
             main_frame,
-            text="Select Format:",
-            font=Style.get_font("normal"),
-            text_color=Theme.TEXT_SECONDARY
+            text="Choose export format to continue",
+            font=Style.get_font("small"),
+            text_color=Theme.TEXT_MUTED
         )
-        format_label.pack(anchor="w", pady=(0, 10))
-        
-        formats_frame = ctk.CTkFrame(main_frame, fg_color=Theme.BG_CARD, corner_radius=8)
-        formats_frame.pack(fill="x", pady=10)
-        
+        subheader.pack(anchor="w", pady=(0, 20))
+
+        # Format selection cards
+        self.format_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        self.format_frame.pack(fill="x", pady=10)
+
+        self.format_buttons = {}
         formats = [
-            ("JSON", "json", "Machine-readable format"),
-            ("Text", "txt", "Human-readable log"),
-            ("CSV", "csv", "Spreadsheet format"),
+            ("JSON", "Machine-readable format with full packet details"),
+            ("TXT", "Human-readable log format"),
         ]
-        
-        for name, value, desc in formats:
-            radio = ctk.CTkRadioButton(
-                formats_frame,
-                text=f"{name} - {desc}",
-                variable=self.format_var,
-                value=value,
-                font=Style.get_font("normal"),
-                text_color=Theme.TEXT_SECONDARY,
-                fg_color=Theme.ACCENT_PRIMARY,
-                border_color=Theme.BORDER_COLOR
-            )
-            radio.pack(anchor="w", padx=15, pady=8)
-            
+
+        for name, desc in formats:
+            btn = self._create_format_card(self.format_frame, name, desc)
+            btn.pack(fill="x", pady=5)
+            self.format_buttons[name.lower()] = btn
+
+        # Status message
+        self.status_label = ctk.CTkLabel(
+            main_frame,
+            text="",
+            font=Style.get_font("small"),
+            text_color=Theme.TEXT_MUTED
+        )
+        self.status_label.pack(pady=(10, 5))
+
+        # Action buttons
         btn_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
-        btn_frame.pack(fill="x", pady=(20, 0))
-        
-        cancel_btn = ctk.CTkButton(
+        btn_frame.pack(fill="x", pady=(15, 0))
+
+        self.cancel_btn = ctk.CTkButton(
             btn_frame,
             text="Cancel",
             command=self.destroy,
             width=100,
+            height=32,
             fg_color=Theme.BG_TERTIARY,
-            hover_color=Theme.BG_CARD,
-            text_color=Theme.TEXT_SECONDARY
+            hover_color=Theme.BORDER_COLOR,
+            text_color=Theme.TEXT_SECONDARY,
+            font=Style.get_font("normal")
         )
-        cancel_btn.pack(side="left", padx=(0, 10))
-        
-        export_btn = ctk.CTkButton(
+        self.cancel_btn.pack(side="left")
+
+        self.confirm_btn = ctk.CTkButton(
             btn_frame,
-            text="Export",
-            command=self._do_export,
-            width=100,
-            fg_color=Theme.ACCENT_SUCCESS,
-            hover_color=Style._lighten_color(Theme.ACCENT_SUCCESS, 15),
-            text_color=Theme.BG_PRIMARY
+            text="Confirm Export",
+            command=self._on_confirm,
+            width=130,
+            height=32,
+            fg_color=Theme.ACCENT_PRIMARY,
+            hover_color=Style._lighten_color(Theme.ACCENT_PRIMARY, 15),
+            text_color="#000000",
+            font=Style.get_font("button"),
+            state="disabled"
         )
-        export_btn.pack(side="right")
-        
-    def _do_export(self):
-        """Trigger export callback."""
-        self.on_export(self.format_var.get())
-        self.destroy()
+        self.confirm_btn.pack(side="right")
+
+    def _create_format_card(self, parent, name: str, desc: str):
+        """Create a selectable format card."""
+        card = ctk.CTkFrame(
+            parent,
+            fg_color=Theme.BG_CARD,
+            corner_radius=8,
+            border_width=1,
+            border_color=Theme.BORDER_COLOR,
+            cursor="hand2"
+        )
+
+        # Click handler
+        card.bind("<Button-1>", lambda e, n=name.lower(): self._select_format(n))
+
+        content = ctk.CTkFrame(card, fg_color="transparent")
+        content.pack(fill="x", padx=15, pady=12)
+
+        # Selection indicator
+        indicator = ctk.CTkFrame(
+            content,
+            width=3,
+            height=40,
+            fg_color=Theme.BORDER_COLOR,
+            corner_radius=2
+        )
+        indicator.pack(side="left", padx=(0, 12))
+        card.indicator = indicator
+
+        # Text content
+        text_frame = ctk.CTkFrame(content, fg_color="transparent")
+        text_frame.pack(side="left", fill="both", expand=True)
+
+        title = ctk.CTkLabel(
+            text_frame,
+            text=name,
+            font=Style.get_font("heading"),
+            text_color=Theme.TEXT_PRIMARY,
+            anchor="w"
+        )
+        title.pack(anchor="w")
+        card.title_label = title
+
+        subtitle = ctk.CTkLabel(
+            text_frame,
+            text=desc,
+            font=Style.get_font("small"),
+            text_color=Theme.TEXT_MUTED,
+            anchor="w"
+        )
+        subtitle.pack(anchor="w")
+
+        # Click binding for all child widgets
+        for widget in [content, text_frame, title, subtitle]:
+            widget.bind("<Button-1>", lambda e, n=name.lower(): self._select_format(n))
+
+        return card
+
+    def _select_format(self, format_name: str):
+        """Handle format selection."""
+        self.selected_format = format_name
+
+        # Update UI to show selection
+        for fmt, btn in self.format_buttons.items():
+            if fmt == format_name:
+                btn.configure(border_color=Theme.ACCENT_PRIMARY)
+                btn.indicator.configure(fg_color=Theme.ACCENT_PRIMARY)
+                btn.title_label.configure(text_color=Theme.ACCENT_PRIMARY)
+            else:
+                btn.configure(border_color=Theme.BORDER_COLOR)
+                btn.indicator.configure(fg_color=Theme.BORDER_COLOR)
+                btn.title_label.configure(text_color=Theme.TEXT_PRIMARY)
+
+        # Enable confirm button
+        self.confirm_btn.configure(state="normal")
+        self.status_label.configure(text=f"Selected: {format_name.upper()}")
+
+    def _on_confirm(self):
+        """Proceed to file picker after format selection."""
+        if not self.selected_format:
+            return
+
+        # Open file picker
+        from tkinter import filedialog
+
+        default_name = f"capture_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{self.selected_format}"
+
+        file_path = filedialog.asksaveasfilename(
+            parent=self,
+            defaultextension=f".{self.selected_format}",
+            initialfile=default_name,
+            filetypes=[
+                (f"{self.selected_format.upper()} files", f"*.{self.selected_format}"),
+                ("All files", "*.*")
+            ],
+            title=f"Save as {self.selected_format.upper()}"
+        )
+
+        if file_path:
+            self.on_export_complete(self.selected_format, file_path)
+            self.destroy()
         
     def _center_on_parent(self, parent):
         """Center dialog on parent window."""

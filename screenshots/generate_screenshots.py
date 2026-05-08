@@ -34,7 +34,7 @@ def create_placeholder_screenshot(filename, title, width=1400, height=900):
     draw.text((x, 200), info_text, fill='#a0a0b0', font=text_font)
     
     # Draw app name
-    app_text = "CodeAlpha Network Sniffer"
+    app_text = "Network Sniffer"
     bbox = draw.textbbox((0, 0), app_text, font=text_font)
     text_width = bbox[2] - bbox[0]
     x = (width - text_width) // 2

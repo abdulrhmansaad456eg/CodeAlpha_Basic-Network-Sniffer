@@ -29,7 +29,7 @@ class MainWindow(ctk.CTk):
         
         Style.configure_ctk()
         
-        self.title("CodeAlpha Network Sniffer")
+        self.title("Network Sniffer")
         self.geometry("1400x900")
         self.minsize(1200, 700)
         self.configure(fg_color=Theme.BG_PRIMARY)
@@ -72,7 +72,7 @@ class MainWindow(ctk.CTk):
         
         logo = ctk.CTkLabel(
             logo_frame,
-            text="◈ CodeAlpha",
+            text="◈ Network",
             font=("Segoe UI", 20, "bold"),
             text_color=Theme.ACCENT_PRIMARY
         )
@@ -446,20 +446,18 @@ class MainWindow(ctk.CTk):
             return
         ExportDialog(self, self._do_export)
         
-    def _do_export(self, format_type: str):
-        """Perform export to file."""
-        filename = PacketExporter.generate_filename(format_type)
-        filepath = PacketExporter.get_export_path(filename)
-        
+    def _do_export(self, format_type: str, file_path: str):
+        """Perform export to file with user-selected path."""
+        import os
+
         success = False
         if format_type == "json":
-            success = PacketExporter.export_to_json(self.packet_store, filepath)
+            success = PacketExporter.export_to_json(self.packet_store, file_path)
         elif format_type == "txt":
-            success = PacketExporter.export_to_txt(self.packet_store, filepath)
-        elif format_type == "csv":
-            success = PacketExporter.export_to_csv(self.packet_store, filepath)
-            
+            success = PacketExporter.export_to_txt(self.packet_store, file_path)
+
         if success:
+            filename = os.path.basename(file_path)
             self.status_indicator.set_status("idle", f"Exported to {filename}")
         else:
             ErrorDialog(self, "Export Failed", "Could not export data to file.")

@@ -1,4 +1,4 @@
-# CodeAlpha Basic Network Sniffer
+# Network Sniffer
 
 A modern, interactive network packet capture tool built for cybersecurity education and professional training. This desktop application provides real-time packet analysis with a sleek, intuitive interface.
 
@@ -10,7 +10,7 @@ A modern, interactive network packet capture tool built for cybersecurity educat
 
 ## Overview
 
-This project was developed during my cybersecurity internship at CodeAlpha. The goal was to build a practical network analysis tool that demonstrates core networking concepts while providing real utility for packet inspection and traffic monitoring.
+A practical network analysis tool that demonstrates core networking concepts while providing real utility for packet inspection and traffic monitoring. Built as a cybersecurity portfolio project.
 
 The sniffer captures live network traffic and presents it in an organized, filterable interface. It supports multiple protocols and provides detailed packet analysis capabilities.
 
@@ -37,7 +37,7 @@ The sniffer captures live network traffic and presents it in an organized, filte
 - Real-time statistics dashboard
 
 ### Data Management
-- Export captured packets to JSON, CSV, or TXT
+- Export captured packets to JSON or TXT with custom save location
 - Persistent log storage
 - Clear data functionality
 - Packet details inspection dialog
@@ -113,8 +113,10 @@ The sniffer captures live network traffic and presents it in an organized, filte
 
 ### Exporting Data
 1. Click "Export Data" in the sidebar
-2. Choose your preferred format (JSON, TXT, CSV)
-3. Files are saved to the `logs/` directory
+2. Select your preferred format (JSON or TXT)
+3. Click "Confirm Export"
+4. Choose your save location in the file picker
+5. The file is saved to your selected location
 
 ### Keyboard Shortcuts
 - `Enter` on selected packet - Open details
@@ -215,7 +217,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- CodeAlpha for the internship opportunity
+- The open source community for excellent tools and libraries
 - Scapy developers for the excellent packet manipulation framework
 - CustomTkinter team for modern Python UI components
 

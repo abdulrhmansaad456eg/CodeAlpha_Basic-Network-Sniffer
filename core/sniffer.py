@@ -163,13 +163,35 @@ class PacketSniffer:
         
     def _clean_payload(self, data: bytes) -> str:
         """Clean binary payload for display."""
+        if not data:
+            return ""
+
+        # Check for high ratio of non-printable bytes (binary detection)
+        printable_count = sum(1 for b in data if 32 <= b <= 126 or b in (9, 10, 13))
+        if printable_count < len(data) * 0.7:
+            return f"[Binary Data: {len(data)} bytes]"
+
+        # Decode with replacement and clean up
         try:
             text = data.decode('utf-8', errors='replace')
-            text = ''.join(char if char.isprintable() or char.isspace() else '.' 
-                          for char in text)
-            return text[:80] + "..." if len(text) > 80 else text
-        except:
-            return "[Binary Data]"
+            # Replace replacement character and other non-printables with '.'
+            cleaned = ''
+            for char in text:
+                if char == '\ufffd':  # Unicode replacement character
+                    cleaned += '.'
+                elif ord(char) < 32 and char not in '\t\n\r':
+                    cleaned += '.'
+                elif ord(char) > 126:
+                    cleaned += '.'
+                else:
+                    cleaned += char
+
+            # Truncate if too long
+            if len(cleaned) > 80:
+                cleaned = cleaned[:77] + "..."
+            return cleaned
+        except Exception:
+            return f"[Binary Data: {len(data)} bytes]"
             
     def get_stats(self) -> Dict[str, Any]:
         """Return current capture statistics."""

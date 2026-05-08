@@ -88,8 +88,8 @@ class AnimatedButton(ctk.CTkButton):
         
         self.base_color = colors.get(style, Theme.ACCENT_PRIMARY)
         self.hover_color = Style._lighten_color(self.base_color, 15)
-        
-        text_color = Theme.BG_PRIMARY if style != "secondary" else Theme.TEXT_PRIMARY
+
+        text_color = "#000000" if style != "secondary" else Theme.TEXT_PRIMARY
         
         super().__init__(
             parent,
