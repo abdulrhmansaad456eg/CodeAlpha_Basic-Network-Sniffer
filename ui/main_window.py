@@ -444,23 +444,38 @@ class MainWindow(ctk.CTk):
             PacketDetailsDialog(self, details)
             
     def _show_export_dialog(self):
-        """Export packets directly as JSON without dialogs."""
+        """Export packets with Windows file picker dialog."""
         if not self.packet_store:
             ErrorDialog(self, "No Data", "No packets to export.\nStart a capture first.")
             return
 
-        # Direct export to logs folder
-        filename = PacketExporter.generate_filename("json")
-        filepath = PacketExporter.get_export_path(filename)
+        # Open Windows file picker
+        from tkinter import filedialog
+        import os
 
-        try:
-            success = PacketExporter.export_to_json(self.packet_store, filepath)
-            if success:
-                self.status_indicator.set_status("idle", f"Exported to {filename}")
-            else:
-                ErrorDialog(self, "Export Failed", "Could not export data to file.")
-        except Exception as e:
-            ErrorDialog(self, "Export Error", f"Export failed:\n{str(e)}")
+        default_name = f"capture_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+
+        file_path = filedialog.asksaveasfilename(
+            parent=self,
+            title="Save Packet Capture",
+            defaultextension=".json",
+            initialfile=default_name,
+            filetypes=[
+                ("JSON files", "*.json"),
+                ("All files", "*.*")
+            ]
+        )
+
+        if file_path:
+            try:
+                success = PacketExporter.export_to_json(self.packet_store, file_path)
+                if success:
+                    filename = os.path.basename(file_path)
+                    self.status_indicator.set_status("idle", f"Exported to {filename}")
+                else:
+                    ErrorDialog(self, "Export Failed", "Could not export data to file.")
+            except Exception as e:
+                ErrorDialog(self, "Export Error", f"Export failed:\n{str(e)}")
             
     def _clear_packets(self, silent: bool = False):
         """Clear all captured packets."""
