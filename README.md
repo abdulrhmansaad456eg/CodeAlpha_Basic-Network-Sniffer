@@ -221,13 +221,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Scapy developers for the excellent packet manipulation framework
 - CustomTkinter team for modern Python UI components
 
----
-
-## Contact
-
-**Developer**: Abdul Rahman Saad  
-**GitHub**: [@abdulrhmansaad456eg](https://github.com/abdulrhmansaad456eg)
-
 Project Link: [https://github.com/abdulrhmansaad456eg/CodeAlpha_Basic-Network-Sniffer](https://github.com/abdulrhmansaad456eg/CodeAlpha_Basic-Network-Sniffer)
 
 ---
