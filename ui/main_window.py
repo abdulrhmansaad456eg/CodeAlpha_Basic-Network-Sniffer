@@ -253,14 +253,26 @@ class MainWindow(ctk.CTk):
         search_frame.grid(row=0, column=0, sticky="ew", padx=15, pady=15)
         search_frame.grid_columnconfigure(0, weight=1)
         
+        table_header_frame = ctk.CTkFrame(search_frame, fg_color="transparent")
+        table_header_frame.pack(side="left", fill="y")
+
         table_label = ctk.CTkLabel(
-            search_frame,
+            table_header_frame,
             text="Captured Packets",
             font=Style.get_font("heading"),
             text_color=Theme.TEXT_PRIMARY
         )
-        table_label.pack(side="left")
-        
+        table_label.pack(anchor="w")
+
+        # Help text about binary payloads
+        help_label = ctk.CTkLabel(
+            table_header_frame,
+            text="Encrypted or binary payloads display as [Binary Data]",
+            font=Style.get_font("small"),
+            text_color=Theme.TEXT_MUTED
+        )
+        help_label.pack(anchor="w")
+
         self.search_bar = SearchBar(
             search_frame,
             placeholder="Search by IP, port, protocol, or payload...",
@@ -436,7 +448,7 @@ class MainWindow(ctk.CTk):
         if not self.packet_store:
             ErrorDialog(self, "No Data", "No packets to export.\nStart a capture first.")
             return
-        ExportDialog(self, self._do_export)
+        self._export_dialog = ExportDialog(self, self._do_export)
         
     def _do_export(self, format_type: str, file_path: str):
         """Perform export to file with user-selected path."""
