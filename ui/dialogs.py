@@ -223,28 +223,41 @@ class ExportDialog(ctk.CTkToplevel):
 
     def _on_export(self):
         """Open file picker and export."""
+        print("DEBUG: _on_export called")
         selected = self.selected_format.get()
+        print(f"DEBUG: selected format = '{selected}'")
         if not selected:
+            print("DEBUG: no format selected, returning")
             return
 
-        from tkinter import filedialog
+        try:
+            from tkinter import filedialog
 
-        default_name = f"capture_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{selected}"
+            default_name = f"capture_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{selected}"
+            print(f"DEBUG: opening filedialog with default_name={default_name}")
 
-        file_path = filedialog.asksaveasfilename(
-            parent=self,
-            defaultextension=f".{selected}",
-            initialfile=default_name,
-            filetypes=[
-                (f"{selected.upper()} files", f"*.{selected}"),
-                ("All files", "*.*")
-            ],
-            title=f"Save as {selected.upper()}"
-        )
+            file_path = filedialog.asksaveasfilename(
+                parent=self,
+                defaultextension=f".{selected}",
+                initialfile=default_name,
+                filetypes=[
+                    (f"{selected.upper()} files", f"*.{selected}"),
+                    ("All files", "*.*")
+                ],
+                title=f"Save as {selected.upper()}"
+            )
+            print(f"DEBUG: file_path returned = '{file_path}'")
 
-        if file_path:
-            self.on_export_complete(selected, file_path)
-            self.destroy()
+            if file_path:
+                print(f"DEBUG: calling on_export_complete with {selected}, {file_path}")
+                self.on_export_complete(selected, file_path)
+                self.destroy()
+            else:
+                print("DEBUG: no file_path selected")
+        except Exception as e:
+            print(f"DEBUG: Exception in _on_export: {e}")
+            import traceback
+            traceback.print_exc()
         
     def _center_on_parent(self, parent):
         """Center dialog on parent window."""

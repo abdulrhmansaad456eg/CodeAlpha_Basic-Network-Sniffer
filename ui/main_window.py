@@ -453,12 +453,22 @@ class MainWindow(ctk.CTk):
     def _do_export(self, format_type: str, file_path: str):
         """Perform export to file with user-selected path."""
         import os
+        print(f"DEBUG _do_export: format={format_type}, file_path={file_path}")
+        print(f"DEBUG _do_export: packet count = {len(self.packet_store)}")
 
         success = False
-        if format_type == "json":
-            success = PacketExporter.export_to_json(self.packet_store, file_path)
-        elif format_type == "txt":
-            success = PacketExporter.export_to_txt(self.packet_store, file_path)
+        try:
+            if format_type == "json":
+                print("DEBUG _do_export: calling export_to_json")
+                success = PacketExporter.export_to_json(self.packet_store, file_path)
+            elif format_type == "txt":
+                print("DEBUG _do_export: calling export_to_txt")
+                success = PacketExporter.export_to_txt(self.packet_store, file_path)
+            print(f"DEBUG _do_export: success={success}")
+        except Exception as e:
+            print(f"DEBUG _do_export: Exception: {e}")
+            import traceback
+            traceback.print_exc()
 
         if success:
             filename = os.path.basename(file_path)
