@@ -59,9 +59,6 @@ The sniffer captures live network traffic and presents it in an organized, filte
 ### Packet Details View
 ![Packet Details](screenshots/packet_details.png)
 
-### Export Dialog
-![Export](screenshots/export_dialog.png)
-
 ---
 
 ## Installation
