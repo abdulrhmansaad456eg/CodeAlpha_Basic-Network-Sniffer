@@ -122,7 +122,7 @@ class ExportDialog(ctk.CTkToplevel):
         super().__init__(parent)
 
         self.title("Export Data")
-        self.geometry("320x200")
+        self.geometry("500x300")
         self.configure(fg_color=Theme.BG_PRIMARY)
         self.on_export_complete = on_export_complete
         self.selected_format = ctk.StringVar(value="")
@@ -136,7 +136,7 @@ class ExportDialog(ctk.CTkToplevel):
     def _build_ui(self):
         """Build compact export dialog with radio buttons."""
         main_frame = ctk.CTkFrame(self, fg_color="transparent")
-        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        main_frame.pack(fill="both", expand=True, padx=30, pady=30)
 
         # Header
         header = ctk.CTkLabel(
@@ -148,8 +148,8 @@ class ExportDialog(ctk.CTkToplevel):
         header.pack(anchor="w", pady=(0, 15))
 
         # Radio button frame
-        radio_frame = ctk.CTkFrame(main_frame, fg_color=Theme.BG_CARD, corner_radius=8)
-        radio_frame.pack(fill="x", pady=5)
+        radio_frame = ctk.CTkFrame(main_frame, fg_color=Theme.BG_CARD, corner_radius=10)
+        radio_frame.pack(fill="x", pady=10)
 
         # JSON option
         self.json_radio = ctk.CTkRadioButton(
@@ -163,7 +163,7 @@ class ExportDialog(ctk.CTkToplevel):
             border_color=Theme.BORDER_COLOR,
             command=self._on_selection_change
         )
-        self.json_radio.pack(anchor="w", padx=15, pady=(12, 6))
+        self.json_radio.pack(anchor="w", padx=20, pady=(20, 10))
 
         # TXT option
         self.txt_radio = ctk.CTkRadioButton(
@@ -177,23 +177,23 @@ class ExportDialog(ctk.CTkToplevel):
             border_color=Theme.BORDER_COLOR,
             command=self._on_selection_change
         )
-        self.txt_radio.pack(anchor="w", padx=15, pady=(6, 12))
+        self.txt_radio.pack(anchor="w", padx=20, pady=(10, 20))
 
         # Button frame
         btn_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
-        btn_frame.pack(fill="x", pady=(20, 0))
+        btn_frame.pack(fill="x", pady=(30, 0))
 
         # Cancel button
         cancel_btn = ctk.CTkButton(
             btn_frame,
             text="Cancel",
             command=self.destroy,
-            width=90,
-            height=28,
+            width=100,
+            height=35,
             fg_color=Theme.BG_TERTIARY,
             hover_color=Theme.BORDER_COLOR,
             text_color=Theme.TEXT_SECONDARY,
-            font=Style.get_font("normal")
+            font=Style.get_font("button")
         )
         cancel_btn.pack(side="left")
 
@@ -202,8 +202,8 @@ class ExportDialog(ctk.CTkToplevel):
             btn_frame,
             text="Export",
             command=self._on_export,
-            width=120,
-            height=28,
+            width=140,
+            height=35,
             fg_color=Theme.ACCENT_PRIMARY,
             hover_color=Style._lighten_color(Theme.ACCENT_PRIMARY, 15),
             text_color="#000000",
